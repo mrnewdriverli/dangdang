@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-''W3C''DTD XHTML 1.0 Transitional''EN"
+        "http:''www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http:''www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/jquery_cookie.js"></script>
+    <link rel="shortcut icon" href="/static/images/favicon.ico?v=20160901" type="image/x-icon">
+    <link href="/static/css/shopping_cart_new.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/footer_150526.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript">
+
+        function f() {
+            $.ajaxSetup({
+                headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            })
+            var name = document.getElementById('name').value
+            var address = document.getElementById('address').value
+            var post = document.getElementById('post').value
+            var phone = document.getElementById('phone').value
+            var tel = document.getElementById('tel').value
+            var address_id = document.getElementById("sel1").value
+
+            $.ajax({
+                type: "post",
+                url: "{% url 'indent:indent_logic' %}",
+                data: {
+                    "name": name,
+                    "address": address,
+                    "post": post,
+                    "phone": phone,
+                    "tel": tel,
+                    "address_id": address_id
+                },
+                success: function (check) {
+                    if (check == 'ok') {
+                        location.href = "{% url 'indent:indent_ok' %}"
+                    } else if (check == 'wrongname') {
+                        alert("请输入姓名")
+                    } else if (check == 'wrongaddress') {
+                        alert("地址有误")
+                    } else if (check == 'wrongpost') {
+                        alert("邮编有误")
+                    } else if (check == 'wrongphone') {
+                        alert("电话有误")
+                    }
+                }
+            })
+        }
+
+        function f1(th) {
+             $.ajaxSetup({
+                headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            })
+            var address = document.getElementById('address')
+            var name = document.getElementById('name')
+            var post = document.getElementById('post')
+            var phone = document.getElementById('phone')
+            var tel = document.getElementById('tel')
+            var sel = document.getElementById("sel1").value
+            console.log(sel)
+            // 发送ajax请求，查出对应的地址
+
+            // success: function(msg)
+            //if msg == ""
+                // 获得所有输入框的标签，让他们的disable属性为false
+            $.ajax({
+                type: "post",
+                url: "{% url 'indent:address' %}",
+                data: {
+                    "sel": sel
+                },
+                success: function (msg) {
+                    check = JSON.parse(msg)
+                    address.value = check.address
+                    $(address).attr("disabled", true)
+                    {#$(address).attr('readonly',true)#}
+                    name.value = check.name
+                    $(name).attr('disabled',true)
+                    post.value = check.post_code
+                    $(post).attr('disabled',true)
+                    phone.value = check.cellphone
+                    $(phone).attr('disabled',true)
+                    tel.value = check.telephone
+                    $(tel).attr('disabled',true)
+
+            }
+            })
+        }
+        function f2(td) {
+            var tr = td.parentNode.parentNode
+            var book_id = $(td).attr("book_id")
+            var book_cost = td.parentNode.previousElementSibling.innerText
+
+            var price1 = document.getElementById('price1').innerText
+
+            var price2 = document.getElementById('price2').innerText
+
+            var price3 = document.getElementById('price3').innerText
+
+            $.ajaxSetup({
+                headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            })
+            $.ajax({
+                type: "post",
+                url: "{% url 'indent:back_to_car' %}",
+                data: {
+                    "book_id": book_id,
+                },
+                success: function (msg) {
+                    if(msg == "1"){
+                        document.getElementById('price1').innerText = Number(price1-book_cost).toFixed(1)
+                        document.getElementById('price2').innerText = Number(price2-book_cost).toFixed(1)
+                        document.getElementById('price3').innerText = Number(price3-book_cost).toFixed(1)
+                        tr.remove()
+                    }else{
+                        alert("放回失败!!")
+                    }
+                }
+            })
+        }
+
+    </script>
+</head>
+
+<body style="padding-bottom:82px">
+
+<link href="/static/css/header_960_150611.css" rel="stylesheet" type="text/css">
+<script src="/static/js/pagetop2015_0827.js" charset="gb2312" type="text/javascript"></script>
+
+<div id="hd">
+    <div id="tools">
+        <div class="tools">
+            <div class="ddnewhead_operate" dd_name="顶链接">
+
+                <div class="ddnewhead_welcome" display="none;">
+                    {% if is_login %}
+                        <span id="nickname"><span class="hi">Hi，</span></span>
+                        <span>{{ name }}</span>
+                        <a href="{% url 'user:logout' %}" name="exit_login">[退出登录]</a>
+                    {% else %}
+                        <a href="{% url 'user:login' %}?location=indent" class="login_link">登录</a>
+                        <a href="{% url 'user:register' %}?location=indent">免费注册</a>
+                    {% endif %}
+                    <div class="tel_pop" style="display:none" id="__ddnav_sjdd"
+                         onmouseover="showgaoji('a_phonechannel','__ddnav_sjdd');"
+                         onmouseout="hideotherchannel('a_phonechannel','__ddnav_sjdd');">
+                        <a target="_blank" href="http:''t.dangdang.com/20130220_ydmr" class="title"><i
+                                class="icon_tel"></i>手机当当</a><i class="title_shadow"></i>
+                        <ul class="tel_pop_box">
+                            <li><a href="http:''t.dangdang.com/20130220_ydmr" dd_name="手机二维码"><span>当当手机客户端</span><img
+                                    src="http:''img3.ddimg.cn/00363/doc/erweima2.png"><span class="text">随手查订单<br>随时享优惠</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="new_head_znx" id="znx_content" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    <div id="header_end"></div>
+    <!--CreateDate  2016-09-28 11:30:01--></div>
+<!--<a href="#" class="tip"></a>-->
+<span class="tip_c" style="display:none;">针对不同配送地址，您的货物可能出现缺货或无货状态，敬请谅解。</span>
+</div>
+</div>
+</div>
+<script type="text/javascript">var nick_num = 0;
+initHeaderOperate();</script>
+<script type="text/javascript" src="http:''orderb.dangdang.com/queryunpaid?callback=Unpaid_Data"></script>
+<div class="shoppingcart_wrapper" id="ad_cpt_11850">
+    <div class="logo_line">
+        <div class="w960">
+            <div class="shopping_procedure01 shopping_procedure "><span>我的购物车</span><span
+                    class="current">填写订单</span><span>完成订单</span>
+            </div>
+            <div class="logo"><a href="#"><img src="/static/images/bz_logo_car.jpg" alt=""></a></div>
+        </div>
+    </div>
+    <div class="indent_con">
+        <div class="shdz">
+            <h3>收货相关信息</h3>
+            <div class="address" id="dp_adress">
+                <span class="icon_adr">&nbsp;</span>配送地址：
+                <div class="select_add">
+                    <select onchange="f1(this)" id="sel1">
+                        <option value="0">---请选择---</option>
+                        {% for ad in address %}
+                            <option id="address_list" value="{{ ad.id }}">{{ ad.address }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <ul class="shdz_con">
+                <p>▪ 收货地址</p>
+                <li><label><strong>*</strong>收&nbsp;&nbsp;货&nbsp;&nbsp;人：</label><input type="text" id='name' name="ship_man"><span id="spn_ship_man" class="hint new_tip" style="display: block;">请填写收货人姓名</span></li>
+                <li><label><strong>*</strong>详细地址：</label><input type="text" id='address' name="ship_man"><span id="spn_ship_man" class="hint new_tip" style="display: block;">xx省xx市xx区</span></li>
+                <li><label><strong>*</strong>邮政编码：</label><input type="text" id='post' name="ship_man"><span id="spn_ship_man" class="hint new_tip" style="display: block;">请输入正确的邮政编码</span></li>
+                <li><label><strong>*</strong>手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：</label>
+                    <input type="text" id='phone' name="ship_man">
+                    <label>或&nbsp;&nbsp;固定电话</label>
+                    <input type="text" id='tel' name="ship_man">
+                    <span id="spn_ship_man" class="hint new_tip" style="display: block;">只填一项即可</span>
+                </li>
+
+            </ul>
+            <div class="balance">商品金额：<p id="price1">{{ s }}</p>
+                <p class="yfze">应付总额（含运费）：<em id="price2">{{ s }}</em></p>
+                <p><a href="javascript:void(0)" onclick="f()">提交订单</a>
+                </p></div>
+        </div>
+        <div class="shdz">
+            <h3>订单1（百知网配送）</h3>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr style="height:30px; line-height:30px;">
+                    <th width="34%">商品名称</th>
+                    <th width="11%">所在仓库</th>
+                    <th width="13%">百知价</th>
+                    <th width="11%">促销价</th>
+                    <th width="9%">数量</th>
+                    <th width="11%">小计</th>
+                    <th width="11%">操作</th>
+                </tr>
+
+                {% for book in cartlist %}
+                    <tr >
+                        <td align="center" id="this">{{ book.name }}</td>
+                        <td align="center" style="width: 100px">{{ book.publisher }}</td>
+                        <td align="center">{{ book.price }}</td>
+                        <td align="center">--</td>
+                        <td align="center">{{ book.count }}</td>
+                        <td align="center" >{{ book.getTolPrice }}</td>
+                        <!--$(th).attr("book_cost") -->
+                        <td align="center" ><a href="javascript:void(0)" onclick="f2(this)" book_id="{{ book.id }}" book_cost="{{ book.getTolPrice }}">删除此项</a></td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td class="table_zj" colspan="3"><strong>小计总额：</strong><em id="price3">{{ s }}</em></td>
+                </tr>
+                {#            <script type="javascript">#}
+                {#                var part_total = document.getElementById('part_total')#}
+                {#                var content = part_total.parentNode.#}
+                {#                #}
+                {#            </script>#}
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="footer">
+        <div class="footer">
+            <div class="footer_nav_box">
+                <div class="footer_copyright"><span>Copyright (C) 当当网 2004-2014, All Rights Reserved</span><a
+                        href="http:''www.hd315.gov.cn/beian/view.asp?bianhao=010202001051000098" target="_blank"
+                        class="footer_img" rel="nofollow"><img
+                        src="http:''img4.dangdang.com/bottom/validate.gif"></a><span><a
+                        href="http:''www.miibeian.gov.cn/" target="_blank" rel="nofollow">京ICP证041189号</a></span><span>出版物经营许可证&nbsp;新出发京批字第直0673号</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="foot_tip_ad">广告</div>
+    <style>
+        .foot_tip_ad {
+            width: 40px;
+            height: 40px;
+            font: 12px/40px "simsun";
+            text-align: center;
+            color: #fff;
+            background-color: #474747;
+            position: fixed;
+            right: 0;
+            bottom: 10px;
+            _position: absolute;
+            _bottom: auto;
+            _top: expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)));
+        }
+    </style>
+
+
+</body>
+</html>
